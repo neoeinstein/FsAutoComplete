@@ -60,9 +60,10 @@ type Commands (serialize : Serializer) =
             return! parse' file text checkOptions
     }
 
-    member __.ParseAllInBackground () =
-        do checker.ParseAndCheckAllProjectsInBackground (state.FileCheckOptions.ToSeq() |> Seq.map snd)
-        [Response.errors serialize ([||], "") ]
+    member __.ParseAndCheckProjectsInBackgroundForFile file = async {
+        do checker.ParseAndCheckProjectsInBackgroundForFile (file, state.FileCheckOptions.ToSeq() )
+        return [Response.errors serialize ([||], "") ]
+    }
 
     member __.ParseProjectsForFile file = async {
         let! res = checker.ParseProjectsForFile(file, state.FileCheckOptions.ToSeq())
@@ -83,8 +84,11 @@ type Commands (serialize : Serializer) =
             | None  -> async { return [Response.info serialize ( sprintf "Project for file not found: %s" file) ]  }
             | Some kv ->
                 async {
-                    let! (_, checkResults) = checker.GetBackgroundCheckResultsForFileInProject(fn, kv.Value)
-                    return [ Response.errors serialize (checkResults.Errors, file) ] })
+                    let checkResults = checker.TryGetRecentCheckResultsForFile(fn, kv.Value)
+                    return
+                        match checkResults with
+                        | None -> [Response.info serialize "File not parsed"]
+                        | Some res -> [ Response.errors serialize (res.GetCheckResults.Errors, file) ] })
 
 
 

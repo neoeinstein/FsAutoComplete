@@ -245,10 +245,9 @@ type FSharpCompilerServiceChecker() =
     return { rawOptions with OtherOptions = opts }
   }
 
-  member __.ParseAndCheckAllProjectsInBackground (options : FSharpProjectOptions seq) =
-    options
-    |> Seq.distinctBy(fun v -> v.ProjectFileName)
-    |> Seq.iter (checker.CheckProjectInBackground)
+  member __.ParseAndCheckProjectsInBackgroundForFile (file,options : seq<string * FSharpProjectOptions>) =
+    defaultArg (getDependingProjects file options) []
+    |> List.iter (checker.CheckProjectInBackground)
 
   member __.ParseProjectsForFile(file, options : seq<string * FSharpProjectOptions> ) =
     let project = options |> Seq.tryFind (fun (k,_) -> k = file)
