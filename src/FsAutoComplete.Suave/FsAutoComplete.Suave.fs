@@ -45,14 +45,15 @@ let main argv =
     let fs = new FileSystem(originalFs, commands.Files.TryFind)
     AbstractIL.Internal.Library.Shim.FileSystem <- fs
 
-    commands.FileChecked
-    |> Event.add (fun response ->
-        client |> Option.iter (fun socket ->
-            async {
-                let! res = response
-                let cnt = res |> List.toArray |> Json.toJson
-                return! socket.send Text cnt true
-            } |> Async.Ignore |> Async.Start ))
+    // commands.FileChecked
+    // |> Event.add (fun response ->
+    //     client |> Option.iter (fun socket ->
+    //         async {
+    //             let! res = response
+
+    //             let cnt = res |> List.toArray |> Json.toJson
+    //             return! socket.send Text cnt true
+    //         } |> Async.Ignore |> Async.Start ))
 
     let handler f : WebPart = fun (r : HttpContext) -> async {
           let data = r.request |> getResourceFromReq

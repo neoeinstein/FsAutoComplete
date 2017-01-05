@@ -161,7 +161,7 @@ type FSharpCompilerServiceChecker() =
   let checker =
     FSharpChecker.Create(
       projectCacheSize = 200,
-      keepAllBackgroundResolutions = true,
+      keepAllBackgroundResolutions = false,
       keepAssemblyContents = true)
 
   let files = ConcurrentDictionary<string, Version * FileState>()
@@ -245,7 +245,7 @@ type FSharpCompilerServiceChecker() =
     return { rawOptions with OtherOptions = opts }
   }
 
-  member __.ParseAndCheckProjectsInBackgroundForFile (file,options : seq<string * FSharpProjectOptions>) =
+  member __.CheckProjectsInBackgroundForFile (file,options : seq<string * FSharpProjectOptions>) =
     defaultArg (getDependingProjects file options) []
     |> List.iter (checker.CheckProjectInBackground)
 
