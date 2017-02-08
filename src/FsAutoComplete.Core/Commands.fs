@@ -111,7 +111,7 @@ type Commands (serialize : Serializer) =
             let rec getProjectType (sr:StreamReader) limit =
                 // only preview3-5 uses ToolsVersion='15.0'
                 // post preview5 dropped this, check Sdk field
-                let isNetCore (line:string) = line.Contains("=\"15.0\"") || line.Contains("Fsharp.NET.Sdk")
+                let isNetCore (line:string) = line.Contains("=\"15.0\"") || line.Contains("FSharp.NET.Sdk")
                 if limit = 0 then
                     Unsupported // unsupported project type
                 else
